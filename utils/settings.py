@@ -11,5 +11,7 @@ class Settings(BaseSettings):
     ALGORITHM: str
     EXP_TIME: int
     FINNHUB_API_KEY: str
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
 
 settings = Settings()

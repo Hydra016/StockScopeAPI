@@ -5,8 +5,9 @@ from schemas.user import UserSchema
 from sqlalchemy.orm import Session
 from models.user import UserModal
 from pwdlib import PasswordHash
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from utils.settings import settings
+from services.mail import send_email
 
 password_hash = PasswordHash.recommended()
 
@@ -16,7 +17,7 @@ def get_password_hash(password):
 def verify_password(password: str, hashed_password: str):
     return password_hash.verify(password, hashed_password)
 
-def register_user(body: UserSchema, db: Session):
+def register_user(body: UserSchema, bg_tasks: BackgroundTasks, db: Session):
     is_user = db.query(UserModal).filter(UserModal.username == body.username).first()
     if is_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
@@ -37,6 +38,8 @@ def register_user(body: UserSchema, db: Session):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    bg_tasks.add_task(send_email, [new_user.email])
 
     return new_user
 
