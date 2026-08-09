@@ -52,6 +52,3 @@ def login_user(body: LoginSchema, db: Session):
     exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME)
     token = jwt.encode({"_id": user.id, "exp": exp_time.timestamp()}, settings.SECRET_KEY, settings.ALGORITHM)
     return { "token": token }
-
-def get_current_user(user: UserModal, db: Session):
-    return db.query(UserModal).get(user.id)
