@@ -31,9 +31,45 @@ class QuoteSchema(BaseModel):
     open: float = Field(validation_alias="o")
     previous_close: float = Field(validation_alias="pc")
     timestamp: int = Field(validation_alias="t")
+    
+class InsiderTransactionSchema(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: str
+    share: int
+    change: int
+    filing_date: date = Field(validation_alias="filingDate")
+    transaction_date: date = Field(validation_alias="transactionDate")
+    transaction_code: str = Field(validation_alias="transactionCode")
+    transaction_price: float = Field(validation_alias="transactionPrice")
+    id: str
+    # symbol: str --> not included in the response bcoz it is same as stock namez
+    source: str
+    is_derivative: bool = Field(validation_alias="isDerivative")
+    # currency: str --> not included in the response bcoz it is empty in all the records
+    
+class FearGreedDataItemSchema(BaseModel):
+    value: int
+    value_classification: str
+    timestamp: int
+    time_until_update: Union[int, None] = None
+
+class FearGreedMetadataSchema(BaseModel):
+    error: Union[str, None] = None
+
+class FearGreedIndexSchema(BaseModel):
+    name: str
+    data: list[FearGreedDataItemSchema]
+    metadata: FearGreedMetadataSchema
 
 class QuoteResponseSchema(BaseModel):
     data: QuoteSchema
 
 class NewsResponseSchema(BaseModel):
     data: list[NewsItemSchema]
+    
+class InsiderTransactionResponseSchema(BaseModel):
+    data: list[InsiderTransactionSchema]
+    
+class MarketSentimentResponseSchema(BaseModel):
+    data: FearGreedIndexSchema

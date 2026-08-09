@@ -23,7 +23,6 @@ class FinnhubService:
     def client(self):
         return self._client
         
-
     async def get_stock_data(self):
         response = await self.client.get("/quote", params={"symbol": self.stock})
         response.raise_for_status()
@@ -31,5 +30,10 @@ class FinnhubService:
     
     async def get_stock_news(self, from_date: date, to_date: date):
         response = await self.client.get("/company-news", params={"symbol": self.stock, "from": from_date.isoformat(), "to": to_date.isoformat()})
+        response.raise_for_status()
+        return response.json()
+    
+    async def get_insider_info(self):
+        response = await self.client.get("/stock/insider-transactions", params={"symbol": self.stock})
         response.raise_for_status()
         return response.json()
