@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
-@auth_router.post('/register', response_model= UserResponseSchema, status_code=status.HTTP_201_CREATED)
+@auth_router.post('/register', status_code=status.HTTP_201_CREATED)
 def register_user(body: UserSchema, bg_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     return auth.register_user(body, bg_tasks, db)
 

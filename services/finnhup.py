@@ -1,8 +1,8 @@
 from datetime import date
-
 import httpx
 from utils.constants import FINNHUB_BASE_URL
 from utils.settings import settings
+
 class FinnhubService:
     def __init__(self, stock, api_key: str = settings.FINNHUB_API_KEY, base_url: str = FINNHUB_BASE_URL, timeout: float = 10.0):
         self._api_key = api_key

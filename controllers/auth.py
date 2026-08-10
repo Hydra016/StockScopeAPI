@@ -7,7 +7,8 @@ from models.user import UserModal
 from pwdlib import PasswordHash
 from fastapi import HTTPException, status, BackgroundTasks
 from utils.settings import settings
-from services.mail import send_email
+from services.mail import MailService
+from utils.helpers.utility import generate_alphanumeric_code
 
 password_hash = PasswordHash.recommended()
 
@@ -16,6 +17,10 @@ def get_password_hash(password):
 
 def verify_password(password: str, hashed_password: str):
     return password_hash.verify(password, hashed_password)
+
+def verify_user(email: str, code: str, bg_tasks: BackgroundTasks):
+    code = generate_alphanumeric_code()
+    bg_tasks.add_task(MailService().send_verification_email, [email], code)
 
 def register_user(body: UserSchema, bg_tasks: BackgroundTasks, db: Session):
     is_user = db.query(UserModal).filter(UserModal.username == body.username).first()
@@ -26,22 +31,22 @@ def register_user(body: UserSchema, bg_tasks: BackgroundTasks, db: Session):
     if is_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
 
-    hash_password = get_password_hash(body.password)
+    # hash_password = get_password_hash(body.password)
 
-    new_user = UserModal(
-        username=body.username,
-        email=body.email,
-        hash_password=hash_password,
-        name=body.name,
-    )
+    # new_user = UserModal(
+    #     username=body.username,
+    #     email=body.email,
+    #     hash_password=hash_password,
+    #     name=body.name,
+    # )
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    bg_tasks.add_task(send_email, [new_user.email])
+    # db.add(new_user)
+    # db.commit()
+    # db.refresh(new_user)
+    code = generate_alphanumeric_code()
+    bg_tasks.add_task(MailService().send_verification_email, [body.email], code)
 
-    return new_user
+    return { "message": "Please check your email for verification." }
 
 def login_user(body: LoginSchema, db: Session):
     user = db.query(UserModal).filter(UserModal.username == body.username).first()
