@@ -6,3 +6,6 @@ class LoginSchema(BaseModel):
 class LoginResponseSchema(BaseModel):
     token: str
 
+class VerifySchema(BaseModel):
+    email: str
+    code: str

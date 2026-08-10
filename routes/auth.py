@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 from models.user import UserModal
-from schemas.auth import LoginSchema
+from schemas.auth import LoginSchema, VerifySchema
 from controllers import auth
 from schemas.user import UserSchema, UserResponseSchema
 from utils.db import get_db
@@ -15,3 +15,7 @@ def register_user(body: UserSchema, bg_tasks: BackgroundTasks, db: Session = Dep
 @auth_router.post('/login', status_code=status.HTTP_200_OK)
 def login_user(body: LoginSchema, db: Session = Depends(get_db)):
     return auth.login_user(body, db)
+
+@auth_router.post("/verify", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
+def verify_user(body: VerifySchema, bg_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    return auth.verify_registration(body, bg_tasks, db)

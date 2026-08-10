@@ -6,6 +6,7 @@ from alembic import context
 from utils.db import Base
 from utils.settings import settings
 import models.user  # noqa: F401 — register models on Base.metadata
+import models.pending_registration
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DB_CONNECTION)
