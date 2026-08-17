@@ -76,8 +76,6 @@ def verify_registration(body: VerifySchema, bg_tasks: BackgroundTasks, db: Sessi
         PendingRegistration.email == body.email
     ).first()
     
-    print(pending)
-
     if not pending:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="No pending registration")
 
