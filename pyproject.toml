@@ -16,3 +16,13 @@ dependencies = [
     "sqlalchemy>=2.0.51",
     "uvicorn>=0.39.0",
 ]
+
+[project.scripts]
+server = "serve:run"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["serve"]
