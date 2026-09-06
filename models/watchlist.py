@@ -9,6 +9,7 @@ class WatchlistModel(Base):
     name = Column(String)
     user_id = Column(Integer, ForeignKey("user_table.id", ondelete="CASCADE"))
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     
 class WatchlistItemModel(Base):
     __tablename__ = "watchlist_item_table"
