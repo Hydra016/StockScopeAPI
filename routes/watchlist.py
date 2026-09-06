@@ -79,7 +79,7 @@ def update_watchlist(watchlist_id: int,  user =  Depends(is_authenticated), db =
     return watchlist.delete_watchlist(watchlist_id, user, db)
 
 @watchlist_router.delete(
-    "/delete-watchlist-item/{watchlist_id}/{watchlist_item_id}",
+    "/{watchlist_id}/delete-watchlist-item/{watchlist_item_id}",
     status_code=status.HTTP_200_OK,
 )
 def update_watchlist(watchlist_id: int, watchlist_item_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
