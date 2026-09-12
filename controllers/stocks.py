@@ -19,9 +19,12 @@ async def get_quote(stock: str, db: Session):
         raise ValueError("Stock symbol is required")
 
     try:
-        res = await FinnhubService(stock=stock).get_stock_data()
+        res = await FinnhubService(stock=stock.strip().upper()).get_stock_data()
         return QuoteResponseSchema(data=QuoteSchema.model_validate(res))
-    except:
+    except HTTPException:
+        raise
+    except Exception as exc:
+        print(f"get_quote failed for {stock}: {exc}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="API can not be reached",

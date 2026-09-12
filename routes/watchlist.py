@@ -4,6 +4,7 @@ from controllers import watchlist
 from schemas.watchlist import (
     WatchlistItemResponseSchema,
     WatchlistItemSchema,
+    WatchlistMarketResponse,
     WatchlistResponseSchema,
     WatchlistSchema,
     GetWatchlistItemSchema,
@@ -37,6 +38,19 @@ def get_watchlist_items(
     db: Session = Depends(get_db),
 ):
     return watchlist.get_watchlist_items(body, user, db)
+
+@watchlist_router.get(
+    "/{watchlist_id}/market",
+    response_model=WatchlistMarketResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_watchlist_market(
+    watchlist_id: int,
+    user: UserModal = Depends(is_authenticated),
+    db: Session = Depends(get_db),
+):
+    return await watchlist.get_watchlist_market(watchlist_id, user, db)
+
 
 @watchlist_router.post(
     "/create",

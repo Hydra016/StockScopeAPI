@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
@@ -35,3 +36,14 @@ class UpdateWatchlistResponseSchema(BaseModel):
 
     name: str
     updated_at: datetime
+
+class WatchlistMarketItemResponse(BaseModel):
+    symbol: str
+    price: Optional[float] = None
+    change: Optional[float] = None
+    percent_change: Optional[float] = None
+
+class WatchlistMarketResponse(BaseModel):
+    id: int
+    name: str
+    stocks: list[WatchlistMarketItemResponse]

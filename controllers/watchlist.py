@@ -10,6 +10,7 @@ from schemas.watchlist import (
     WatchlistSchema,
 )
 from models.user import UserModal
+from controllers.stocks import get_quote
 
 
 def get_owned_watchlist(watchlist_id: int, user: UserModal, db: Session) -> WatchlistModel:
@@ -65,7 +66,7 @@ def create_watchlist_item(body: WatchlistItemSchema, user: UserModal, db: Sessio
             detail="Symbol already exists in this watchlist",
         )
 
-    new_item = WatchlistItemModel(watchlist_id=watchlist.id, symbol=body.symbol)
+    new_item = WatchlistItemModel(watchlist_id=watchlist.id, symbol=body.symbol.strip().upper())
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -128,7 +129,7 @@ def delete_watchlist(watchlist_id: int, user: UserModal, db: Session):
     return "Watchlist Deleted Successfully"
 
 def delete_watchlist_item(watchlist_id: int, watchlist_item_id: int, user: UserModal, db: Session):
-    watchlist = get_owned_watchlist(watchlist_id, user, db)
+    get_owned_watchlist(watchlist_id, user, db)
 
     watchlist_item = db.query(WatchlistItemModel).filter(WatchlistItemModel.id == watchlist_item_id).first()
 
@@ -142,3 +143,43 @@ def delete_watchlist_item(watchlist_id: int, watchlist_item_id: int, user: UserM
     db.commit()
 
     return "Watchlist Item Deleted Successfully"
+
+async def get_watchlist_market(watchlist_id: int, user: UserModal, db: Session):
+    watchlist = get_owned_watchlist(watchlist_id, user, db)
+
+    watchlist_items = (
+        db.query(WatchlistItemModel)
+        .filter(WatchlistItemModel.watchlist_id == watchlist.id)
+        .all()
+    )
+
+    stocks = []
+    for item in watchlist_items:
+        symbol = item.symbol.strip().upper()
+        try:
+            stock_data = await get_quote(symbol, db)
+            stocks.append(
+                {
+                    "symbol": symbol,
+                    "price": stock_data.data.current_price,
+                    "change": stock_data.data.change,
+                    "percent_change": stock_data.data.percent_change,
+                }
+            )
+        except HTTPException:
+            stocks.append(
+                {
+                    "symbol": symbol,
+                    "price": None,
+                    "change": None,
+                    "percent_change": None,
+                }
+            )
+
+    watchlist_market = {
+        "id": watchlist.id,
+        "name": watchlist.name,
+        "stocks": stocks
+    }
+
+    return watchlist_market
