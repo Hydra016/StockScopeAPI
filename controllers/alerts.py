@@ -144,8 +144,6 @@ def update_alert(
     for field, value in updates.items():
         setattr(alert, field, value)
 
-    # If the user reactivates an alert,
-    # treat it as waiting to trigger again.
     if updates.get("is_active") is True:
         alert.triggered_at = None
 
