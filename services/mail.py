@@ -86,6 +86,60 @@ class MailService:
         await self._fm.send_message(message)
         return {"message": "Verification email sent"}
 
+    async def send_alert_email(self, emails: List[str], stock: str, price: float) -> Dict[str, str]:
+        symbol = stock.strip().upper()
+        formatted_price = f"${price:,.2f}"
+        body = f"""
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#4b5563;">
+          One of your price alerts just triggered. <strong style="color:#0f172a;">{symbol}</strong>
+          has reached the target you set.
+        </p>
+        <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:22px 18px;text-align:center;margin:0 0 20px;">
+          <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#c2410c;">
+            Target reached
+          </p>
+          <p style="margin:0 0 6px;font-size:28px;font-weight:700;letter-spacing:1px;color:#0f172a;">
+            {symbol}
+          </p>
+          <p style="margin:0;font-size:24px;font-weight:700;color:#9a3412;">
+            {formatted_price}
+          </p>
+        </div>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+          <tr>
+            <td width="50%" style="padding:14px 16px;border-right:1px solid #eef2f7;background:#f8fafc;">
+              <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.6px;text-transform:uppercase;color:#6b7280;">
+                Symbol
+              </p>
+              <p style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">
+                {symbol}
+              </p>
+            </td>
+            <td width="50%" style="padding:14px 16px;background:#f8fafc;">
+              <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.6px;text-transform:uppercase;color:#6b7280;">
+                Target price
+              </p>
+              <p style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">
+                {formatted_price}
+              </p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#6b7280;">
+          This alert is now inactive so you won’t get duplicate emails. You can create a new one anytime in StockScope.
+        </p>
+        """
+        html = self._wrap_email("Price alert triggered", body)
+
+        message = MessageSchema(
+            subject=f"StockScope alert: {symbol} hit {formatted_price}",
+            recipients=emails,
+            body=html,
+            subtype=MessageType.html,
+        )
+        await self._fm.send_message(message)
+        return {"message": "Alert email sent"}
+
     async def send_confirmation_email(self, emails: List[str]) -> Dict[str, str]:
         body = """
         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#4b5563;">
@@ -110,3 +164,5 @@ class MailService:
         )
         await self._fm.send_message(message)
         return {"message": "Confirmation email sent"}
+
+    

@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from controllers import admin
-# from models.user import UserModal
+from models.user import UserModal
 from schemas.user import UserResponseSchema
 from utils.db import get_db
-# from utils.helpers.authentication import is_authenticated
+from utils.helpers.authentication import is_authenticated
 
 admin_router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -19,7 +19,7 @@ admin_router = APIRouter(prefix="/api/admin", tags=["Admin"])
 )
 def get_all_users(
     db: Session = Depends(get_db),
-    # user: UserModal = Depends(is_authenticated), --> commenting out the authentication dependency for testing purposes
+    user: UserModal = Depends(is_authenticated)
 ):
     return admin.get_all_users(db)
 
@@ -31,6 +31,6 @@ def get_all_users(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    # user: UserModal = Depends(is_authenticated), --> commenting out the authentication dependency for testing purposes
+    user: UserModal = Depends(is_authenticated)
 ):
     admin.delete_user(user_id, db)

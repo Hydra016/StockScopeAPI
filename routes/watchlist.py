@@ -17,7 +17,7 @@ from utils.helpers.authentication import is_authenticated
 watchlist_router = APIRouter(prefix="/api/watchlist", tags=["Watchlist"])
 
 @watchlist_router.get(
-    "/watchlist",
+    "/",
     response_model=list[WatchlistResponseSchema],
     status_code=status.HTTP_200_OK,
 )
@@ -28,7 +28,7 @@ def get_watchlist_for_user(
     return watchlist.get_watchlist_for_user(user, db)
 
 @watchlist_router.get(
-    "/watchlist-items",
+    "/items",
     response_model=list[WatchlistItemResponseSchema],
     status_code=status.HTTP_200_OK,
 )
@@ -78,7 +78,7 @@ def create_watchlist_item(
     return watchlist.create_watchlist_item(body, user, db)
 
 @watchlist_router.put(
-    "/update-watchlist/{watchlist_id}",
+    "/update/{watchlist_id}",
     response_model=UpdateWatchlistResponseSchema,
     status_code=status.HTTP_200_OK
 )
@@ -86,14 +86,14 @@ def update_watchlist(body: WatchlistSchema, watchlist_id: int,  user =  Depends(
     return watchlist.update_watchlist(body, watchlist_id, user, db)
 
 @watchlist_router.delete(
-    "/delete-watchlist/{watchlist_id}",
+    "/delete/{watchlist_id}",
     status_code=status.HTTP_200_OK,
 )
 def update_watchlist(watchlist_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
     return watchlist.delete_watchlist(watchlist_id, user, db)
 
 @watchlist_router.delete(
-    "/{watchlist_id}/delete-watchlist-item/{watchlist_item_id}",
+    "/{watchlist_id}/delete-item/{watchlist_item_id}",
     status_code=status.HTTP_200_OK,
 )
 def update_watchlist(watchlist_id: int, watchlist_item_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):

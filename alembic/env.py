@@ -8,6 +8,7 @@ from utils.settings import settings
 import models.user  # noqa: F401 — register models on Base.metadata
 import models.pending_registration
 import models.watchlist
+import models.alert
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DB_CONNECTION)
