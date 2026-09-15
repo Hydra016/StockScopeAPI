@@ -89,12 +89,12 @@ def update_watchlist(body: WatchlistSchema, watchlist_id: int,  user =  Depends(
     "/delete/{watchlist_id}",
     status_code=status.HTTP_200_OK,
 )
-def update_watchlist(watchlist_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
+def delete_watchlist_item(watchlist_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
     return watchlist.delete_watchlist(watchlist_id, user, db)
 
 @watchlist_router.delete(
     "/{watchlist_id}/delete-item/{watchlist_item_id}",
     status_code=status.HTTP_200_OK,
 )
-def update_watchlist(watchlist_id: int, watchlist_item_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
+def delete_watchlist(watchlist_id: int, watchlist_item_id: int,  user =  Depends(is_authenticated), db = Depends(get_db)):
     return watchlist.delete_watchlist_item(watchlist_id, watchlist_item_id, user, db)
